@@ -27,7 +27,7 @@
                   </option>
                 </select>
             </td>
-            <div v-if="row.field_type_select_row===4">
+            <div v-if="row.field_type_select_row==='Enum'">
               <td>
                 <select v-model="row.field_data">
                   <option v-for="thing in things" v-bind:value="thing.value" v-bind:key="thing.id">
