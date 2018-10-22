@@ -25,7 +25,7 @@ SECRET_KEY = '+7e45r059!atx)kgiysrs_v#oy1u&%(xi%_h^awy6$_oy5&lhx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['xaf3dqdcrg.execute-api.us-east-1.amazonaws.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api',
-    'corsheaders'
+    'corsheaders',
+    'webpack_loader',
+    'django_s3_storage'
 ]
 
 MIDDLEWARE = [
@@ -59,7 +61,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR, 'dist'],
+        'DIRS': [BASE_DIR, 'frontend'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,9 +74,6 @@ TEMPLATES = [
     },
 ]
 
-STATICFILES_DIRS = [
-  os.path.join(BASE_DIR, 'dist/static'),
-]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -126,7 +125,29 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'frontend/dist'),
+    os.path.join(BASE_DIR, 'frontend/static'),
+)
+STATIC_ROOT = os.path.join(BASE_DIR, 'frontend')
 STATIC_URL = '/static/'
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': '',
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend\webpack-stats.json'),
+    }
+}
+
+YOUR_S3_BUCKET = "zappa-static-1jx90lz4t"
+
+STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
+AWS_S3_BUCKET_NAME_STATIC = YOUR_S3_BUCKET
+
+# These next two lines will serve the static files directly 
+# from the s3 bucket
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % YOUR_S3_BUCKET
+STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 
 CORS_ORIGIN_ALLOW_ALL = False
 
